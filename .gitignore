@@ -1,2 +1,4 @@
 /MenuBuster/.vs
+/MenuBuster/bin
+/MenuBuster/obj
 *.cache
