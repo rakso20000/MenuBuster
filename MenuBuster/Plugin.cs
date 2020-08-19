@@ -42,10 +42,27 @@ namespace MenuBuster {
 		*/
 		#endregion
 		
+		public void OnSceneChanged(Scene prevScene, Scene nextScene) {
+			
+			if (nextScene.name == "GameCore") {
+				
+				Logger.log.Info("Disabling system button");
+				
+				//Disable system button
+				
+			} else if (prevScene.name == "GameCore") {
+				
+				Logger.log.Info("Reenabling system button");
+				
+				//Reenable system button
+				
+			}
+			
+		}
+		
 		[OnStart]
 		public void OnApplicationStart() {
 			
-			Logger.log.Debug("OnApplicationStart");
 			new GameObject("MenuBusterController").AddComponent<MenuBusterController>();
 			
 		}
@@ -56,5 +73,21 @@ namespace MenuBuster {
 			Logger.log.Debug("OnApplicationQuit");
 			
 		}
+		
+		[OnEnable]
+		public void OnEnable() {
+			
+			SceneManager.activeSceneChanged += OnSceneChanged;
+			
+		}
+		
+		[OnDisable]
+		public void OnDisable() {
+			
+			SceneManager.activeSceneChanged -= OnSceneChanged;
+			
+		}
+		
 	}
+	
 }
