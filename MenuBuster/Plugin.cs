@@ -8,6 +8,7 @@ using IPA.Config.Stores;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
+using System.IO;
 
 namespace MenuBuster {
 	
@@ -62,6 +63,8 @@ namespace MenuBuster {
 		
 		[OnStart]
 		public void OnApplicationStart() {
+			
+			DLLInjector.InjectDLL("vrserver", Directory.GetCurrentDirectory() + "\\Libs\\MenuBusterCore.dll");
 			
 			new GameObject("MenuBusterController").AddComponent<MenuBusterController>();
 			
