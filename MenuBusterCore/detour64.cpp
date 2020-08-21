@@ -51,7 +51,7 @@ size_t Detour64::calc_min_hook_length(void* function) {
 	size_t length = 0;
 
 	while (length < JMP_STUB_SIZE) {
-		length += ldasm(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(function) + length), &ld, 0);
+		length += ldasm(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(function) + length), &ld, 1);
 	}
 
 	return length;
