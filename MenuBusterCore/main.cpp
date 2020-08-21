@@ -17,8 +17,16 @@ bool disable_menu = false;
 bool menu_down = false;
 bool can_unhook = true;
 
+union Button {
+	uint64_t raw;
+	struct {
+		uint32_t button;
+		uint32_t hand;
+	};
+};
+
 Detour64 hook;
-using fn_update_button_w = __int64(__fastcall*)(__int64 a1, uint32_t hand, uint32_t button, bool is_keydown, double a4);
+using fn_update_button_w = __int64(__fastcall*)(__int64 a1, Button button, bool is_keydown, double a4);
 fn_update_button_w o_update_button_w;
 
 struct IpcMessage {
@@ -28,17 +36,16 @@ struct IpcMessage {
 	
 };
 
-signed __int64 __fastcall hk_update_button_w(__int64 a1, uint32_t hand, uint32_t button, bool is_keydown, double a4) {
+signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
 	
-	if (_ReturnAddress() == lighthouse_address && button == 0x1) {
+	if (_ReturnAddress() == lighthouse_address && button.button == 0x1) {
 		__int64 ret;
-		
 		if ((disable_menu && !menu_down) || (!is_keydown && !menu_down)) {
 			ret = is_keydown ? 3 : 0;
 		}
 		else {
-			ret = o_update_button_w(a1, hand, button, is_keydown, a4);
+			ret = o_update_button_w(a1, button, is_keydown, a4);
 			menu_down = is_keydown;
 		}
 		
@@ -47,7 +54,7 @@ signed __int64 __fastcall hk_update_button_w(__int64 a1, uint32_t hand, uint32_t
 	}
 	else {
 		can_unhook = true;
-		return o_update_button_w(a1, hand, button, is_keydown, a4);
+		return o_update_button_w(a1, button, is_keydown, a4);
 	}
 }
 
