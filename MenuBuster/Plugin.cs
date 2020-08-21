@@ -49,13 +49,13 @@ namespace MenuBuster {
 				
 				Logger.log.Info("Disabling system button");
 				
-				//Disable system button
+				Server.SetInSong(true);
 				
 			} else if (prevScene.name == "GameCore") {
 				
 				Logger.log.Info("Reenabling system button");
 				
-				//Reenable system button
+				Server.SetInSong(false);
 				
 			}
 			
@@ -72,7 +72,7 @@ namespace MenuBuster {
 				Logger.log.Info("Successfully injected MenuBusterCore");
 			else
 				Logger.log.Error("Couldn't inject MenuBusterCore");
-
+			
 			new GameObject("MenuBusterController").AddComponent<MenuBusterController>();
 			
 		}

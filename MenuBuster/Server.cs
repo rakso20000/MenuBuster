@@ -21,7 +21,7 @@ namespace MenuBuster {
 			
 			TcpListener server = new TcpListener(IPAddress.Any, 12616);
 			
-			server.Start(); Logger.log.Info("2");
+			server.Start();
 			
 			isRunning = true;
 			
