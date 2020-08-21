@@ -64,14 +64,23 @@ namespace MenuBuster {
 		[OnStart]
 		public void OnApplicationStart() {
 			
-			DLLInjector.InjectDLL("vrserver", Directory.GetCurrentDirectory() + "\\Libs\\MenuBusterCore.dll");
+			Server.StartServer();
 			
+			bool success = DLLInjector.InjectDLL("vrserver", Directory.GetCurrentDirectory() + "\\Libs\\MenuBusterCore.dll");
+			
+			if (success)
+				Logger.log.Info("Successfully injected MenuBusterCore");
+			else
+				Logger.log.Error("Couldn't inject MenuBusterCore");
+
 			new GameObject("MenuBusterController").AddComponent<MenuBusterController>();
 			
 		}
 		
 		[OnExit]
 		public void OnApplicationQuit() {
+			
+			Server.Exit();
 			
 			Logger.log.Debug("OnApplicationQuit");
 			
