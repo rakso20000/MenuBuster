@@ -10,6 +10,7 @@
 
 constexpr uintptr_t steamvr_offset = 0x21440;
 constexpr uintptr_t lighthouse_offset = 0xA410A;
+constexpr uint64_t steamvr_sign = 0xC8B60F4538EC8348;
 
 void* lighthouse_address = 0;
 
@@ -134,15 +135,32 @@ void thread(HMODULE module) {
 
 void init_thread(HMODULE module) {
 	HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(thread), reinterpret_cast<void*>(module), 0, 0);
-
+	
 	if (thread_handle != INVALID_HANDLE_VALUE) {
 		CloseHandle(thread_handle);
 	}
 }
 
+void display_error(uint64_t* update_button_w) {
+	MessageBox(0, "MenuBuster was developed for a different version of SteamVR", "MenuBusterCore Error", 0);
+}
+
 void hook_function() {
 	lighthouse_address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(GetModuleHandle("driver_lighthouse.dll")) + lighthouse_offset);
-	o_update_button_w = hook.hook_function<fn_update_button_w>(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(GetModuleHandle("vrserver.exe")) + steamvr_offset), hk_update_button_w);
+	
+	uint64_t* update_button_w = reinterpret_cast<uint64_t*>(reinterpret_cast<uintptr_t>(GetModuleHandle("vrserver.exe")) + steamvr_offset);
+	
+	if (*update_button_w != steamvr_sign) {
+		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), update_button_w, 0, 0);
+		
+		if (thread_handle != INVALID_HANDLE_VALUE) {
+			CloseHandle(thread_handle);
+		}
+		
+		return;
+	}
+	
+	o_update_button_w = hook.hook_function<fn_update_button_w>(update_button_w, hk_update_button_w);
 }
 
 void unhook_function() {
