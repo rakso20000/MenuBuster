@@ -2,9 +2,7 @@
 #include <ws2tcpip.h>
 #include <Windows.h>
 #include <cstdint>
-#include <thread>
 #include <intrin.h>
-#include<string>
 
 #include "detour64.hpp"
 

@@ -98,8 +98,6 @@
     <Compile Include="DLLInjector.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Configuration\PluginConfig.cs" />
-    <Compile Include="MenuBusterController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
   </ItemGroup>
