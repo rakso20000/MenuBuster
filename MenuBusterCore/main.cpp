@@ -100,12 +100,14 @@ void thread(HMODULE module) {
 	sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 	
 	if (sock == INVALID_SOCKET) {
+		freeaddrinfo(result);
 		unload(module, sock);
 		return;
 	}
 	
 	err = connect(sock, ptr->ai_addr, ptr->ai_addrlen);
 	if (err == SOCKET_ERROR) {
+		freeaddrinfo(result);
 		unload(module, sock);
 		return;
 	}
