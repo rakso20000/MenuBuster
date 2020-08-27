@@ -47,7 +47,7 @@ namespace MenuBuster {
 			
 			Server.StartServer();
 			
-			bool success = DLLInjector.InjectDLL("vrserver", Directory.GetCurrentDirectory() + "\\Libs\\MenuBusterCore.dll");
+			bool success = DLLInjector.InjectDLL("vrserver", IPA.Utilities.UnityGame.NativeLibraryPath + "\\MenuBusterCore.dll");
 			
 			if (success)
 				Logger.log.Info("Successfully injected MenuBusterCore");
