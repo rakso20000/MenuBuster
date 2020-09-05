@@ -43,8 +43,11 @@ namespace MenuBuster {
 			isRunning = false;
 			
 		}
-
+		
 		public static void SetInSong(bool b) {
+			
+			if (!Plugin.isInjected)
+				return;
 			
 			while (newData);
 			
@@ -58,6 +61,9 @@ namespace MenuBuster {
 		}
 		
 		public static void Exit() {
+			
+			if (!Plugin.isInjected)
+				return;
 			
 			while (newData);
 			

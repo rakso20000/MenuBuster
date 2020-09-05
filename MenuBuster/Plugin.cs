@@ -7,6 +7,9 @@ namespace MenuBuster {
 	
 	[Plugin(RuntimeOptions.SingleStartInit)]
 	public class Plugin {
+		
+		public static bool isInjected = false;
+		
 		internal static Plugin instance { get; private set; }
 		internal static string Name => "MenuBuster";
 		
@@ -47,9 +50,9 @@ namespace MenuBuster {
 			
 			Server.StartServer();
 			
-			bool success = DLLInjector.InjectDLL("vrserver", IPA.Utilities.UnityGame.NativeLibraryPath + "\\MenuBusterCore.dll");
+			isInjected = DLLInjector.InjectDLL("vrserver", IPA.Utilities.UnityGame.NativeLibraryPath + "\\MenuBusterCore.dll");
 			
-			if (success)
+			if (isInjected)
 				Logger.log.Info("Successfully injected MenuBusterCore");
 			else
 				Logger.log.Error("Couldn't inject MenuBusterCore");
