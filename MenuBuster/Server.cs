@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -75,7 +76,14 @@ namespace MenuBuster {
 			shouldExit = 1;
 			newData = true;
 			
-			while (isRunning);
+			Stopwatch stopwatch = new Stopwatch();
+			
+			stopwatch.Start();
+			
+			while (isRunning && stopwatch.ElapsedMilliseconds < 5000);
+			
+			if (isRunning)
+				Logger.log.Error("MenuBusterCore still running");
 			
 		}
 		
