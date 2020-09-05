@@ -58,8 +58,6 @@ namespace MenuBuster {
 			if (!Plugin.isInjected)
 				return;
 			
-			while (newData);
-			
 			if (b)
 				inSong = 1;
 			else
@@ -73,8 +71,6 @@ namespace MenuBuster {
 			
 			if (!Plugin.isInjected)
 				return;
-			
-			while (newData);
 			
 			shouldExit = 1;
 			newData = true;
