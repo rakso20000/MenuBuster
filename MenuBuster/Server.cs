@@ -12,8 +12,6 @@ namespace MenuBuster {
 		
 		public static void ServerLoop() {
 			
-			byte[] addr = {127, 0, 0, 1};
-			
 			TcpListener server = new TcpListener(IPAddress.Any, 12616);
 			
 			server.Start();

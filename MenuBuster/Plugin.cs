@@ -1,7 +1,6 @@
 ﻿using IPA;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
-using System.IO;
 
 namespace MenuBuster {
 	
