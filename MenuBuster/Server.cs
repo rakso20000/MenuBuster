@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -22,6 +23,8 @@ namespace MenuBuster {
 			
 			NetworkStream ns = client.GetStream();
 			
+			ns.WriteTimeout = 200;
+			
 			while (true) {
 				
 				while (!newData)
@@ -29,7 +32,15 @@ namespace MenuBuster {
 				
 				byte[] msg = {inSong, shouldExit};
 				
-				ns.Write(msg, 0, msg.Length);
+				try {
+					
+					ns.Write(msg, 0, msg.Length);
+					
+				} catch (IOException) {
+					
+					Logger.log.Warn("IPC timeout");
+					
+				}
 				
 				newData = false;
 				
