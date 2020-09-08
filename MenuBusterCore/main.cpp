@@ -2,7 +2,10 @@
 #include <ws2tcpip.h>
 #include <Windows.h>
 #include <cstdint>
+#include <fstream>
 #include <intrin.h>
+#include <string>
+#include <iostream>
 
 #include "detour64.hpp"
 
@@ -35,8 +38,13 @@ struct IpcMessage {
 	
 };
 
+std::ofstream fs;
+
 signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
+	
+	if (_ReturnAddress() == lighthouse_address)
+		fs << "update_button: " << button.raw << " button: " << button.button << std::endl;
 	
 	if (_ReturnAddress() == lighthouse_address && button.button == 0x1) {
 		__int64 ret;
@@ -58,6 +66,9 @@ signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_
 }
 
 void unload(HMODULE module, SOCKET sock) {
+	
+	fs << "IPC stopped" << std::endl;
+	
 	if (sock != INVALID_SOCKET) {
 		shutdown(sock, SD_BOTH);
 		closesocket(sock);
@@ -66,6 +77,7 @@ void unload(HMODULE module, SOCKET sock) {
 	WSACleanup();
 	
 	FreeLibraryAndExitThread(module, 0);
+	
 }
 
 void thread(HMODULE module) {
@@ -118,9 +130,13 @@ void thread(HMODULE module) {
 	
 	int bytes_read = 0;
 	
+	fs << "IPC started" << std::endl;
+	
 	while (bytes_read != SOCKET_ERROR) {
 		
 		bytes_read = recv(sock, reinterpret_cast<char*>(&msg), sizeof(IpcMessage), MSG_WAITALL);
+		
+		fs << "Message received: " << msg.in_song << ", " << msg.should_exit << std::endl;
 		
 		if (msg.should_exit)
 			break;
@@ -150,6 +166,8 @@ void hook_function() {
 	
 	uint64_t* update_button_w = reinterpret_cast<uint64_t*>(reinterpret_cast<uintptr_t>(GetModuleHandle("vrserver.exe")) + steamvr_offset);
 	
+	fs << "steamvr_sign: " << *update_button_w << std::endl;
+	
 	if (*update_button_w != steamvr_sign) {
 		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), update_button_w, 0, 0);
 		
@@ -173,11 +191,22 @@ void unhook_function() {
 
 BOOL WINAPI DllMain(HINSTANCE dll_module, DWORD reason, LPVOID reserved) {
 	if (reason == DLL_PROCESS_ATTACH) {
+		
+		std::string appdata = getenv("APPDATA");
+		
+		fs.open(appdata + "\\MenuBuster.log", std::ios::out);
+		
+		fs << std::hex << std::uppercase << "MenuBuster log started" << std::endl;
+		
 		init_thread(dll_module);
 		hook_function();
 	}
 	else if (reason == DLL_PROCESS_DETACH) {
+		
 		unhook_function();
+		
+		fs.close();
+		
 	}
 	
 	return TRUE;
