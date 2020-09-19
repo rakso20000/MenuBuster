@@ -7,10 +7,7 @@
 #include "detour64.hpp"
 
 constexpr uintptr_t steamvr_offset = 0x22180;
-constexpr uintptr_t lighthouse_offset = 0xA410A;
 constexpr uint64_t steamvr_sign = 0xC8B60F4538EC8348;
-
-void* lighthouse_address = 0;
 
 bool disable_menu = false;
 bool menu_down = false;
@@ -38,7 +35,7 @@ struct IpcMessage {
 signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
 	
-	if (_ReturnAddress() == lighthouse_address && button.button == 0x1) {
+	if (button.button == 0x1) {
 		__int64 ret;
 		if ((disable_menu && !menu_down) || (!is_keydown && !menu_down)) {
 			ret = is_keydown ? 3 : 0;
@@ -146,8 +143,6 @@ void display_error(uint64_t* update_button_w) {
 }
 
 void hook_function() {
-	lighthouse_address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(GetModuleHandle("driver_lighthouse.dll")) + lighthouse_offset);
-	
 	uint64_t* update_button_w = reinterpret_cast<uint64_t*>(reinterpret_cast<uintptr_t>(GetModuleHandle("vrserver.exe")) + steamvr_offset);
 	
 	if (*update_button_w != steamvr_sign) {
