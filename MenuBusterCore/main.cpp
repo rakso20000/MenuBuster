@@ -6,7 +6,7 @@
 
 #include "detour64.hpp"
 
-constexpr uintptr_t steamvr_offset = 0x21440;
+constexpr uintptr_t steamvr_offset = 0x22180;
 constexpr uintptr_t lighthouse_offset = 0xA410A;
 constexpr uint64_t steamvr_sign = 0xC8B60F4538EC8348;
 
