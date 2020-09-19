@@ -35,7 +35,7 @@ struct IpcMessage {
 signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
 	
-	if (button.button == 0x1) {
+	if (button.button == 0x1 && (button.hand == 0x1 || button.hand == 0x4)) {
 		__int64 ret;
 		if ((disable_menu && !menu_down) || (!is_keydown && !menu_down)) {
 			ret = is_keydown ? 3 : 0;
