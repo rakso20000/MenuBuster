@@ -43,7 +43,7 @@ std::ofstream fs;
 signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
 	
-	fs << "[" << reinterpret_cast<uintptr_t>(_ReturnAddress()) - reinterpret_cast<uintptr_t>(lighthouse_address) << "] update_button: " << button.raw << " button: " << button.button << "hand: " << button.hand << std::endl;
+	fs << "[" << reinterpret_cast<uintptr_t>(_ReturnAddress()) - reinterpret_cast<uintptr_t>(lighthouse_address) << "] update_button: " << button.raw << " button: " << button.button << " hand: " << button.hand << std::endl;
 	
 	if (button.button == 0x1 && (button.hand == 0x1 || button.hand == 0x4)) {
 		__int64 ret;
