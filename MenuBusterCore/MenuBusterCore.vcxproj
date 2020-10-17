@@ -149,10 +149,12 @@
     <ClCompile Include="detour64.cpp" />
     <ClCompile Include="ldasm.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pattern_locator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="detour64.hpp" />
     <ClInclude Include="ldasm.h" />
+    <ClInclude Include="pattern_locator.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,12 +3,15 @@
 #include <Windows.h>
 #include <cstdint>
 #include <intrin.h>
+#include <psapi.h>
 
 #include "detour64.hpp"
+#include "pattern_locator.hpp"
 
-constexpr uintptr_t steamvr_offset = 0x22180;
 constexpr uintptr_t lighthouse_offset = 0xA424A;
-constexpr uint64_t steamvr_sign = 0xC8B60F4538EC8348;
+
+const byte* steamvr_pattern = reinterpret_cast<const byte*>("\x48\x83\xEC\x38\x45\x0F\xB6\xC8\xC6\x44\x24\x28\x00\x4C\x8B\xC2");
+constexpr size_t steamvr_pattern_length = 16;
 
 void* lighthouse_address = 0;
 
@@ -73,7 +76,7 @@ void thread(HMODULE module) {
 	WSADATA wsaData;
 	
 	int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
-
+	
 	if (err != 0) {
 		unload(module, INVALID_SOCKET);
 	}
@@ -141,26 +144,34 @@ void init_thread(HMODULE module) {
 	}
 }
 
-void display_error(uint64_t* update_button_w) {
+void display_error() {
 	MessageBox(0, "MenuBuster was developed for a different version of SteamVR", "MenuBusterCore Error", 0);
 }
 
 void hook_function() {
 	lighthouse_address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(GetModuleHandle("driver_lighthouse.dll")) + lighthouse_offset);
 	
-	uint64_t* update_button_w = reinterpret_cast<uint64_t*>(reinterpret_cast<uintptr_t>(GetModuleHandle("vrserver.exe")) + steamvr_offset);
+	void* steamvr_addr = GetModuleHandle("vrserver.exe");
 	
-	if (*update_button_w != steamvr_sign) {
-		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), update_button_w, 0, 0);
+	MODULEINFO info;
+	
+	GetModuleInformation(GetCurrentProcess(), reinterpret_cast<HMODULE>(steamvr_addr), &info, sizeof(MODULEINFO));
+	
+	void* update_button_w_addr = locate_pattern(steamvr_addr, info.SizeOfImage, steamvr_pattern, steamvr_pattern_length);
+	
+	if (!update_button_w_addr) {
+		
+		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), nullptr, 0, 0);
 		
 		if (thread_handle != INVALID_HANDLE_VALUE) {
 			CloseHandle(thread_handle);
 		}
 		
 		return;
+		
 	}
 	
-	o_update_button_w = hook.hook_function<fn_update_button_w>(update_button_w, hk_update_button_w);
+	o_update_button_w = hook.hook_function<fn_update_button_w>(update_button_w_addr, hk_update_button_w);
 }
 
 void unhook_function() {

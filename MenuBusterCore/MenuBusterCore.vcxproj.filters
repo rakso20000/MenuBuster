@@ -29,12 +29,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pattern_locator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ldasm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="detour64.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_locator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
