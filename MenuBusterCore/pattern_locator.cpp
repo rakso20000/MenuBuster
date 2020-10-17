@@ -2,7 +2,7 @@
 
 void* locate_pattern(void* start_addr, size_t length, const byte* pattern, size_t pattern_length) {
 	
-	static auto is_match = [pattern, pattern_length](byte* addr) -> bool {
+	auto is_match = [pattern, pattern_length](byte* addr) -> bool {
 		
 		for (size_t i = 0; i < pattern_length; i++)
 			if (pattern[i] != addr[i])
