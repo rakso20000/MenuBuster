@@ -117,8 +117,7 @@ namespace MenuBuster {
 			if (allocatedMemory.ToInt32() == 0)
 				return false;
 			
-			IntPtr bytesWritten = new IntPtr(0);
-			if (!WriteProcessMemory(processHandle, allocatedMemory, pathASCII, pathASCII.Length, out bytesWritten))
+			if (!WriteProcessMemory(processHandle, allocatedMemory, pathASCII, pathASCII.Length, out _))
 				return false;
 			
 			IntPtr kernel32 = GetModuleHandle("kernel32.dll");
