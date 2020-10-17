@@ -144,8 +144,8 @@ void init_thread(HMODULE module) {
 	}
 }
 
-void display_error() {
-	MessageBox(0, "MenuBuster was developed for a different version of SteamVR", "MenuBusterCore Error", 0);
+void display_error(const char* message) {
+	MessageBox(0, message, "MenuBusterCore Error", 0);
 }
 
 void hook_function() {
@@ -161,7 +161,7 @@ void hook_function() {
 	
 	if (!update_button_w_addr) {
 		
-		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), nullptr, 0, 0);
+		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), const_cast<char*>("Failed to locate update_button_w"), 0, 0);
 		
 		if (thread_handle != INVALID_HANDLE_VALUE) {
 			CloseHandle(thread_handle);
