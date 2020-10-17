@@ -8,12 +8,13 @@
 #include "detour64.hpp"
 #include "pattern_locator.hpp"
 
-constexpr uintptr_t lighthouse_offset = 0xA424A;
-
 const byte* steamvr_pattern = reinterpret_cast<const byte*>("\x48\x83\xEC\x38\x45\x0F\xB6\xC8\xC6\x44\x24\x28\x00\x4C\x8B\xC2");
 constexpr size_t steamvr_pattern_length = 16;
 
-void* lighthouse_address = 0;
+const byte* lighthouse_pattern = reinterpret_cast<const byte*>("\x48\x8B\x10\x48\x85\xD2\x74\x14\x48\x8B\x8B");
+constexpr size_t lighthouse_pattern_length = 11;
+
+void* lighthouse_return_address = nullptr;
 
 bool disable_menu = false;
 bool menu_down = false;
@@ -41,7 +42,7 @@ struct IpcMessage {
 signed __int64 __fastcall hk_update_button_w(__int64 a1, Button button, bool is_keydown, double a4) {
 	can_unhook = false;
 	
-	if (_ReturnAddress() == lighthouse_address && button.button == 0x1) {
+	if (_ReturnAddress() == lighthouse_return_address && button.button == 0x1) {
 		__int64 ret;
 		if ((disable_menu && !menu_down) || (!is_keydown && !menu_down)) {
 			ret = is_keydown ? 3 : 0;
@@ -149,7 +150,6 @@ void display_error(const char* message) {
 }
 
 void hook_function() {
-	lighthouse_address = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(GetModuleHandle("driver_lighthouse.dll")) + lighthouse_offset);
 	
 	void* steamvr_addr = GetModuleHandle("vrserver.exe");
 	
@@ -171,7 +171,28 @@ void hook_function() {
 		
 	}
 	
+	void* lighthouse_addr = GetModuleHandle("driver_lighthouse.dll");
+	
+	GetModuleInformation(GetCurrentProcess(), reinterpret_cast<HMODULE>(lighthouse_addr), &info, sizeof(MODULEINFO));
+	
+	byte* lighthouse_return_addr = reinterpret_cast<byte*>(locate_pattern(lighthouse_addr, info.SizeOfImage, lighthouse_pattern, lighthouse_pattern_length));
+	
+	if (!lighthouse_return_addr) {
+		
+		HANDLE thread_handle = CreateThread(0, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(display_error), const_cast<char*>("Failed to locate driver_lighthouse return"), 0, 0);
+		
+		if (thread_handle != INVALID_HANDLE_VALUE) {
+			CloseHandle(thread_handle);
+		}
+		
+		return;
+		
+	}
+	
+	lighthouse_return_address = lighthouse_return_addr + 28;
+	
 	o_update_button_w = hook.hook_function<fn_update_button_w>(update_button_w_addr, hk_update_button_w);
+	
 }
 
 void unhook_function() {
